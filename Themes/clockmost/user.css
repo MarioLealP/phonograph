@@ -1,0 +1,11 @@
+/* spike: take the whole window - hide Spotify's own chrome, the main view fills it */
+.Root__nav-bar, .Root__globalNav, .Root__top-bar, .Root__now-playing-bar, .Root__right-sidebar,
+.main-globalNav-globalNav, .main-topBar-container { display: none !important; }
+.Root__top-container { grid-template-areas: "main-view" !important; grid-template-columns: 1fr !important;
+  grid-template-rows: 1fr !important; padding: 0 !important; gap: 0 !important; }
+.Root__main-view { grid-area: main-view !important; border-radius: 0 !important; }
+body, .Root, .Root__main-view { background: #0F0F10 !important; }
+.phono-spike { padding: 40px; color: #f1f1f4; font-family: "JetBrains Mono", monospace; }
+.phono-spike h1 { color: #FFFA00; letter-spacing: .2em; font-size: 22px; }
+.phono-spike h2 { color: #7d8089; letter-spacing: .18em; font-size: 12px; text-transform: uppercase; margin-top: 24px; }
+.phono-spike pre { white-space: pre-wrap; }
