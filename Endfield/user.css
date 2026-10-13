@@ -1,0 +1,340 @@
+/* Endfield - "Phonograph" skin for Spotify (Spicetify theme).
+   Source of truth: ref/mocks/components/ds-spotify-v2.html + ref/mocks/components/ds-shell.css.
+   Fonts (install separately): JetBrains Mono = mono labels, Inter = body text.
+   Stacks fall back to Consolas / "Segoe UI". No glows. Square plates, rounded pills, circle avatars.
+   Colours are exact mockup hex; the mapping table lives in spotify/README.md.
+   Spotify's layout is NOT ours: everything below restyles, nothing restructures.
+   Selector names come from the Spotify desktop DOM used by Spicetify themes; Spotify renames
+   classes often, so a few rules may need a rename after a live check (see README). */
+
+:root {
+  /* house palette (ds-shell.css), exact hex */
+  --ph-ground: #0F0F10;
+  --ph-rail: #101114;
+  --ph-side: #15161A;
+  --ph-chat: #1A1B1F;
+  --ph-field: #26282D;
+  --ph-steel: #33363C;
+  --ph-ink: #F1F1F4;
+  --ph-ink2: #C9CCD3;
+  --ph-dim: #7D8089;
+  --ph-faint: #55575E;
+  --ph-ghost: #43454C;
+  --ph-yellow: #FFFA00;
+  --ph-orange: #FF9E2C;
+  --ph-crimson: #D91E36;
+  --ph-violet: #CFC6F4;               /* phonograph accent (light lavender) */
+  --ph-wash: rgba(207, 198, 244, .12); /* selected row (mock .row.on) */
+  --ph-lav: #D6CCFF;                  /* slider fill (mock .vol input) */
+  --ph-mono: "JetBrains Mono", Consolas, "Cascadia Mono", ui-monospace, monospace;
+  --ph-body: "Inter", "Segoe UI", system-ui, sans-serif;
+  --ph-hair: rgba(255, 255, 255, .10);
+  --ph-rowline: rgba(255, 255, 255, .08);
+}
+
+/* ---------- base ---------- */
+body {
+  font-family: var(--ph-body);
+  color: var(--ph-ink);
+  background: var(--ph-ground);
+}
+
+/* main view = the mock's track-list panel: 48px top highlight + panel gradient over the ground */
+.Root__main-view {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, .05), transparent 48px),
+    linear-gradient(180deg, rgba(23, 24, 28, .93), rgba(14, 15, 18, .95)),
+    var(--ph-ground) !important;
+}
+/* dotted bottom edge of the panel (mock .list::after) */
+.Root__main-view::after {
+  content: "";
+  position: absolute;
+  left: 28px;
+  right: 28px;
+  bottom: 5px;
+  height: 14px;
+  pointer-events: none;
+  background: radial-gradient(rgba(255, 255, 255, .13) 1px, transparent 1.3px) 0 0 / 9px 9px;
+  -webkit-mask-image: linear-gradient(0deg, #000, transparent);
+  mask-image: linear-gradient(0deg, #000, transparent);
+}
+
+/* scrollbars: thin, steel thumb, square (house: square corners) */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: var(--ph-steel);
+  border: 3px solid var(--ph-ground);
+  border-radius: 0;
+}
+
+/* focus = structural yellow (house rule: yellow only for active / selected / focused) */
+:focus-visible { outline: 1px solid var(--ph-yellow) !important; outline-offset: 1px; }
+
+/* ---------- top bar + search (mock .top / .search / .title) ---------- */
+.main-topBar-container, .main-topBar-background {
+  background: var(--ph-ground) !important;
+  border-bottom: 1px solid var(--ph-hair);
+}
+.main-topBar-container { height: 86px; }
+
+/* search field: 44px tall, 6px radius, inset dark, mono 13px ls .14em, colour #8A8E96 */
+.x-searchInput-searchInputInput, [class*="searchInputInput"] {
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, .22);
+  border-radius: 6px;
+  background: rgba(20, 21, 24, .55);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, .5);
+  font: 13px var(--ph-mono);
+  letter-spacing: .14em;
+  color: var(--ph-ink2);
+}
+.x-searchInput-searchInputInput::placeholder { color: #8A8E96; letter-spacing: .14em; }
+/* yellow >>> prompt (mock .search b) - inserted in front of the field wrapper */
+.x-searchInput-searchInput::before {
+  content: "›››";
+  margin-right: 8px;
+  color: var(--ph-yellow);
+  font: 700 13px var(--ph-mono);
+  letter-spacing: .1em;
+}
+
+/* top-bar title / nav / user widget: mono, uppercase, wide tracking (mock .title) */
+.main-topBar-topbarLink, .main-topBar-navButton, .main-userWidget-displayName {
+  font-family: var(--ph-mono);
+  letter-spacing: .2em;
+  text-transform: uppercase;
+}
+.main-userWidget-displayName { color: var(--ph-ink); font-weight: 600; font-size: 13px; }
+
+/* people avatars = circles (house exception) */
+.main-userWidget-avatarImage, .main-userWidget-userWidget img, [class*="avatarImage"] {
+  border-radius: 50% !important;
+}
+
+/* ---------- left sidebar / library (mock labels .lbl / .pn, strip names) ---------- */
+.Root__nav-bar {
+  background: var(--ph-side) !important;
+  border-right: 1px solid var(--ph-hair);
+}
+/* section labels: mono 11px, ls .22em, faint, uppercase (mock .lbl) */
+.main-yourLibraryX-headerTitle, .main-yourLibraryX-libraryHeader,
+.main-rootlist-rootlistHeader, .main-navBar-navBarItemLink {
+  font-family: var(--ph-mono);
+  font-size: 11px;
+  letter-spacing: .22em;
+  text-transform: uppercase;
+  color: var(--ph-faint);
+}
+/* playlist / item names: mono 12px, ls .1em, ink (mock .strip .pn) */
+.main-rootlist-rootlistItemName, .main-yourLibraryX-listItemTitle,
+.main-yourLibraryX-entityTitle, .main-rootlist-rootlistItemLink {
+  font-family: var(--ph-mono);
+  font-size: 12px;
+  letter-spacing: .1em;
+  color: var(--ph-ink);
+}
+/* sub-line under item names (mock .mini .ms) */
+.main-yourLibraryX-listItemSubTitle, .main-yourLibraryX-entitySubTitle {
+  font-family: var(--ph-mono);
+  font-size: 11px;
+  letter-spacing: .14em;
+  color: var(--ph-dim);
+}
+/* selected row in the library: lavender wash + yellow text marker colour (mock .row.on) */
+.main-rootlist-rootlistItem.selected .main-rootlist-rootlistItemLink,
+.main-yourLibraryX-listItem.selected, .main-yourLibraryX-listItem[aria-selected="true"] {
+  background: var(--ph-wash) !important;
+}
+
+/* ---------- track list (mock .row / .rt / .ra / .rl / .rd / .rn) ---------- */
+.main-trackList-trackList { border-bottom: 0; }
+.main-trackList-trackListRow {
+  border-bottom: 1px solid var(--ph-rowline);
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+.main-trackList-trackListRow:hover { background-color: var(--ph-field); }
+/* all columns default to the mock's meta line (12-13px mono, ls .1-.12em, dim) */
+.main-trackList-rowColumn {
+  font-family: var(--ph-mono);
+  font-size: 12px;
+  letter-spacing: .1em;
+  color: var(--ph-dim);
+}
+/* title column: 600 20px body, ink (mock .rt) */
+.main-trackList-rowTitle {
+  font-family: var(--ph-body);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--ph-ink);
+}
+/* artist / album column (mock .ra): 13px mono, ls .12em, dim */
+.main-trackList-rowSubTitle, .main-trackList-rowMeta {
+  font-family: var(--ph-mono);
+  font-size: 13px;
+  letter-spacing: .12em;
+  color: var(--ph-dim);
+}
+/* length column (mock .rl): 16px mono, ink */
+.main-trackList-rowDuration {
+  font-family: var(--ph-mono);
+  font-size: 16px;
+  letter-spacing: 0;
+  color: var(--ph-ink);
+}
+/* index marker (mock .rn): 11px mono, ls .12em, faint */
+.main-trackList-rowMarker {
+  font-family: var(--ph-mono);
+  font-style: normal;
+  font-size: 11px;
+  letter-spacing: .12em;
+  color: var(--ph-faint);
+}
+/* selected / playing row (mock .row.on): lavender wash, yellow index */
+.main-trackList-trackListRow.main-trackList-selected,
+.main-trackList-trackListRow[aria-selected="true"] { background: var(--ph-wash) !important; }
+.main-trackList-trackListRow.main-trackList-selected .main-trackList-rowMarker,
+.main-trackList-trackListRow[aria-selected="true"] .main-trackList-rowMarker,
+.main-trackList-trackListRow.playing .main-trackList-rowMarker { color: var(--ph-yellow); }
+
+/* sort dropdown = the light pill (mock .pill-sel / .pill) */
+.main-dropDown-dropDown, [class*="dropDown"] {
+  background: #E8E9EE !important;
+  color: #111 !important;
+  border-radius: 20px;
+  border: 0;
+  font: 600 12px var(--ph-mono);
+  letter-spacing: .14em;
+}
+
+/* ---------- playlist header (mock .fext text block) ---------- */
+.main-entityHeader-title {
+  font-family: var(--ph-body);
+  font-size: 36px;
+  font-weight: 600;
+  color: #FFFFFF;
+}
+.main-entityHeader-artistLabel, .main-entityHeader-creator, [class*="entityHeader-artist"] {
+  font-family: var(--ph-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: var(--ph-dim);
+}
+.main-entityHeader-descriptionText, [class*="entityHeader-description"] {
+  font-family: var(--ph-body);
+  font-size: 17px;
+  line-height: 1.55;
+  color: rgba(241, 241, 244, .52);
+}
+
+/* cards (playlist grid): square-ish plates, 2px radius (house: 2px plates) */
+[class*="main-cardCard"] { border-radius: 2px; }
+
+/* ---------- context menus / dropdowns: card surface, mono control labels ---------- */
+.main-contextMenu-menu {
+  background: var(--ph-chat) !important;
+  border: 1px solid var(--ph-hair);
+  border-radius: 2px;
+  box-shadow: none;
+}
+.main-contextMenu-menuItem, .main-contextMenu-menuItemButton {
+  font-family: var(--ph-mono);
+  font-size: 12px;
+  letter-spacing: .14em;
+  color: var(--ph-ink2);
+}
+
+/* ---------- now-playing bar (mock .bar / .timer / .titles / .ctrls / .vol) ---------- */
+.main-nowPlayingBar-nowPlayingBar {
+  position: relative;
+  height: 96px;
+  box-sizing: border-box;
+  background: linear-gradient(180deg, #151619, #0C0C0E) !important;
+  border-top: 1px solid var(--ph-rowline);
+}
+/* faint visualizer edge, the mock's bar top edge, rendered as a STATIC bar skyline
+   (mock .viz = 72 lavender bars, fill rgba(214,204,255,.22); the mock animates and glows - no glows here) */
+.main-nowPlayingBar-nowPlayingBar::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -18px;
+  height: 20px;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(90deg, rgba(214, 204, 255, .22) 0 5px, transparent 5px 26px) 0 100% / 100% 8px repeat-x,
+    repeating-linear-gradient(90deg, rgba(214, 204, 255, .18) 0 5px, transparent 5px 26px) 9px 100% / 100% 13px repeat-x,
+    repeating-linear-gradient(90deg, rgba(214, 204, 255, .20) 0 5px, transparent 5px 26px) 17px 100% / 100% 18px repeat-x;
+}
+/* micro print, bottom-left (mock .micro): 9px mono, ls .16em, faint */
+.main-nowPlayingBar-nowPlayingBar::after {
+  content: "42ms UID: 6349456094";
+  position: absolute;
+  left: 28px;
+  bottom: 6px;
+  pointer-events: none;
+  font: 9px var(--ph-mono);
+  letter-spacing: .16em;
+  color: var(--ph-faint);
+}
+
+/* track title + artist (mock .titles .t / .s) */
+.main-nowPlayingBar-nowPlayingBar .main-trackInfo-name,
+.main-nowPlayingBar-nowPlayingBar .main-trackInfo-name a {
+  font-family: var(--ph-body);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--ph-ink);
+}
+.main-nowPlayingBar-nowPlayingBar .main-trackInfo-artists,
+.main-nowPlayingBar-nowPlayingBar .main-trackInfo-artists a {
+  font-family: var(--ph-mono);
+  font-size: 12px;
+  letter-spacing: .12em;
+  color: var(--ph-dim);
+}
+
+/* transport icons: ink strokes, 22px; centre play 30px (mock .ctrls) */
+.player-controls__buttons button, .player-controls__wrapper button { color: var(--ph-ink) !important; }
+.player-controls__buttons svg { width: 22px; height: 22px; }
+.player-controls__buttons .main-playButton-PlayButton svg { width: 30px; height: 30px; }
+/* the big play control = the light pill (mock .pill): #E8E9EE plate, #111 glyph, round */
+.main-playButton-PlayButton {
+  background-color: #E8E9EE !important;
+  border-radius: 50% !important;
+  color: #111 !important;
+}
+.main-playButton-PlayButton:hover { background-color: var(--ph-yellow) !important; }
+
+/* playback progress + volume: 4px track, lavender fill, 12px SQUARE knob (mock .vol input) */
+.progress-bar__bg { background-color: rgba(255, 255, 255, .14) !important; height: 4px; border-radius: 0; }
+.progress-bar__fg { background-color: var(--ph-lav) !important; height: 4px; border-radius: 0; }
+.progress-bar__slider {
+  width: 12px !important;
+  height: 12px !important;
+  background: var(--ph-ink) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  opacity: 1 !important;
+}
+.playback-bar__progress-time, .playback-bar [class*="progress-time"] {
+  font-family: var(--ph-mono);
+  font-size: 13px;
+  letter-spacing: .08em;
+  color: var(--ph-ink);
+}
+
+/* now-playing cover: chamfered TR/BL, 10px (mock .cover) */
+.main-coverSlot-container .cover-art, .main-coverSlot-container img,
+[class*="coverArt"] { border-radius: 0 !important; }
+.main-nowPlayingBar-coverArt, .main-nowPlayingBar-coverArt image,
+.main-coverSlot-container {
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px));
+}
