@@ -1,6 +1,6 @@
 pkgbase = phonograph
 	pkgdesc = The clockmost phonograph: an Endfield Spotify skin (Spicetify) with a live cava spectrum, kept applied across Spotify updates
-	pkgver = 0.1.0
+	pkgver = 0.1.1
 	pkgrel = 1
 	url = https://git.clockmost.com/pkgs/phonograph
 	install = phonograph.install

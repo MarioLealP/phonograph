@@ -3,7 +3,7 @@
 # Builds from $startdir (the pkgs/ CI checks out the tagged commit and runs makepkg in place).
 
 pkgname=phonograph
-pkgver=0.1.0
+pkgver=0.1.1
 pkgrel=1
 pkgdesc="The clockmost phonograph: an Endfield Spotify skin (Spicetify) with a live cava spectrum, kept applied across Spotify updates"
 arch=('x86_64')
