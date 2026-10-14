@@ -1,0 +1,231 @@
+/* EF phonograph — all CSS ported 1:1 from components/ds-spotify-v2.html (order 01).
+   Scoped under .ef-phonograph so the surface can live inside a desktop window.
+   The page's html/body backgrounds and fixed pseudo-layers became layers inside the root
+   (.bg-dot, .bg-rings, .bg-hatch = absolute). Every value kept as is. */
+.ef-phonograph {
+  --ground: #0F0F10;
+  --steel: #33363C;
+  --yellow: #FFFA00;
+  --ink: #f1f1f4;
+  --dim: #7d8089;
+}
+.ef-phonograph, .ef-phonograph * { box-sizing: border-box; }
+/* root = the page's html/body: fills its host, clips, stacks the app in a column */
+.ef-phonograph {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+}
+
+/* top search bar, same look as the drawer's (mock, not wired) */
+.ef-phonograph .top { position: relative; flex: none; display: flex; align-items: center; justify-content: center; padding: 22px 28px 20px; }
+.ef-phonograph .top::after { content: ""; position: absolute; left: 28px; right: 28px; bottom: 0; height: 1px; background: rgba(255,255,255,.10); }
+/* placeholder window controls (min / max / close), rule-18 glyphs */
+.ef-phonograph .wctl { position: absolute; right: 28px; top: 29px; display: flex; gap: 10px; }
+.ef-phonograph .wb { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; padding: 0;
+  background: rgba(20,21,24,.55); border: 1px solid rgba(255,255,255,.18); border-radius: 6px;
+  color: #c9ccd3; cursor: pointer; }
+.ef-phonograph .wb:hover { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.38); color: #fff; }
+.ef-phonograph .wb svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 3.2; stroke-linecap: butt; }
+.ef-phonograph .title { position: absolute; left: 28px; top: 30px; font: 600 18px Consolas, monospace; letter-spacing: .2em; color: var(--ink); }
+.ef-phonograph .title span { color: var(--dim); font-weight: 400; }
+.ef-phonograph .search { width: 420px; height: 44px; display: flex; align-items: center; gap: 12px; padding: 0 16px;
+  border: 1px solid rgba(255,255,255,.22); border-radius: 6px; background: rgba(20,21,24,.55);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,.5); font: 13px Consolas, monospace; letter-spacing: .14em; color: #8a8e96; }
+.ef-phonograph .search b { color: #FFFA00; font-weight: 700; letter-spacing: .1em; }
+
+/* left album deck lives in the deck <style> block near the end of the head */
+.ef-phonograph .main { flex: 1; min-height: 0; display: flex; align-items: center; padding-left: 28px; }
+/* right side: track list on its own panel (page dots excluded), thin rows with hairline rules */
+.ef-phonograph .list { position: relative; isolation: isolate; margin-left: auto; margin-right: 28px; width: 660px;
+  display: flex; flex-direction: column; padding: 26px 28px 24px; }
+.ef-phonograph .list::before { content: ""; position: absolute; inset: 0; z-index: -1; border-radius: 2px;
+  background: linear-gradient(180deg, rgba(255,255,255,.05), transparent 48px),
+    linear-gradient(180deg, rgba(23,24,28,.93), rgba(14,15,18,.95)); }
+.ef-phonograph .list::after { content: ""; position: absolute; left: 28px; right: 28px; bottom: 5px; height: 14px; z-index: -1;
+  background: radial-gradient(rgba(255,255,255,.13) 1px, transparent 1.3px) 0 0 / 9px 9px;
+  -webkit-mask-image: linear-gradient(0deg, #000, transparent); mask-image: linear-gradient(0deg, #000, transparent); }
+/* panel furniture: brackets, tick ruler, barcode + readout - the list's own recipe (rule 22) */
+.ef-phonograph .pmark { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.ef-phonograph .pmark .bk { position: absolute; width: 18px; height: 18px; }
+.ef-phonograph .pmark .bk.tl { left: 12px; top: 12px; border-left: 2px solid rgba(241,241,244,.22); border-top: 2px solid rgba(241,241,244,.22); }
+.ef-phonograph .pmark .bk.br { right: 12px; bottom: 12px; border-right: 2px solid rgba(241,241,244,.22); border-bottom: 2px solid rgba(241,241,244,.22); }
+.ef-phonograph .pmark .ruler { position: absolute; right: 10px; top: 64px; bottom: 64px; width: 12px;
+  background:
+    repeating-linear-gradient(180deg, rgba(241,241,244,.30) 0 1px, transparent 1px 9px) 100% 0 / 6px 100%,
+    repeating-linear-gradient(180deg, rgba(241,241,244,.42) 0 1px, transparent 1px 45px) 100% 0 / 12px 100%;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 12%, #000 82%, transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 12%, #000 82%, transparent); }
+.ef-phonograph .pmark .mb { position: absolute; left: 28px; bottom: 30px; width: 88px; height: 11px;
+  background: repeating-linear-gradient(90deg, rgba(241,241,244,.5) 0 2px, transparent 2px 5px, rgba(241,241,244,.5) 5px 6px, transparent 6px 9px); }
+.ef-phonograph .pmark .mc { position: absolute; left: 126px; bottom: 30px; line-height: 11px; font: 9px Consolas, monospace; letter-spacing: .16em; color: #55575e; }
+.ef-phonograph .row { position: relative; display: grid; grid-template-columns: 1fr auto; column-gap: 24px; align-items: center;
+  padding: 16px 8px 16px 44px; border-bottom: 1px solid rgba(255,255,255,.08); grid-template-columns: 1fr auto auto; }
+.ef-phonograph .row .rn { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-style: normal;
+  font: 11px Consolas, monospace; letter-spacing: .12em; color: #55575e; }
+.ef-phonograph .row.on .rn { color: var(--yellow); }
+.ef-phonograph .row.on { background: rgba(207,198,244,.12); }
+/* sort dropdown: light pill, like the Current Room Vinyl pill */
+.ef-phonograph .sort { align-self: flex-end; display: flex; align-items: center; gap: 14px; margin-bottom: 22px;
+  font: 12px Consolas, monospace; letter-spacing: .16em; color: var(--dim); }
+.ef-phonograph .pill-sel { position: relative; display: inline-flex; align-items: center; background: #e8e9ee; border-radius: 20px; padding: 0 14px; }
+.ef-phonograph .pill-sel select { appearance: none; -webkit-appearance: none; border: 0; background: transparent; color: #111;
+  font: 600 12px Consolas, monospace; letter-spacing: .14em; padding: 8px 18px 8px 0; outline: none; cursor: pointer; }
+.ef-phonograph .pill-sel b { position: absolute; right: 14px; color: #111; font-weight: 400; pointer-events: none; }
+.ef-phonograph .row .rt { grid-column: 1; grid-row: 1; font: 600 20px "Segoe UI", system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ef-phonograph .row .ra { grid-column: 1; grid-row: 2; font: 13px Consolas, monospace; letter-spacing: .12em; color: var(--dim); margin-top: 4px; }
+.ef-phonograph .row .rl { grid-column: 3; grid-row: 1 / span 2; font: 16px Consolas, monospace; color: var(--ink); }
+.ef-phonograph .row .rd { grid-column: 2; grid-row: 1 / span 2; text-align: right; font: 12px Consolas, monospace;
+  letter-spacing: .1em; color: var(--dim); }
+
+
+/* the bar: full width, dark, its top edge is the faint visualizer (rule 24) */
+.ef-phonograph .bar { position: relative; height: 96px; background: linear-gradient(180deg, #151619, #0c0c0e);
+  display: flex; align-items: center; gap: 22px; padding: 0 28px; }
+.ef-phonograph .viz { position: absolute; left: 0; right: 0; top: -34px; height: 36px; width: 100%; pointer-events: none; }
+.ef-phonograph .bar::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 1px; background: rgba(255,255,255,.08); }
+
+/* album cover: small square, chamfered, topo art */
+.ef-phonograph .cover { position: relative; width: 56px; height: 56px; flex: none; overflow: hidden; background: #26282d;
+  clip-path: polygon(0 0, calc(100% - 10px) 0, 100% 10px, 100% 100%, 10px 100%, 0 calc(100% - 10px)); }
+.ef-phonograph .cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .6; }
+
+/* black timer tag: pause glyph + elapsed / total */
+/* sits on the seam between the visualizer and the bar, left side */
+.ef-phonograph .timer { position: absolute; left: 28px; top: -16px; z-index: 1;
+  display: flex; align-items: center; gap: 10px; background: #000; padding: 7px 12px 7px 10px;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, calc(100% - 8px) 100%, 0 100%);
+  font: 13px Consolas, monospace; letter-spacing: .08em; }
+.ef-phonograph .timer .pause { display: inline-flex; gap: 3px; }
+.ef-phonograph .timer .pause i { width: 3px; height: 12px; background: var(--ink); }
+
+.ef-phonograph .titles { min-width: 0; flex: 0 1 320px; }
+/* volume: bottom right of the bar, thin slider with a speaker glyph */
+.ef-phonograph .vol { position: absolute; right: 28px; top: 50%; transform: translateY(-50%); display: flex; align-items: center; gap: 12px; color: var(--ink); }
+.ef-phonograph .vol svg { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ef-phonograph .vol svg path:first-child { fill: currentColor; stroke: none; }
+.ef-phonograph .vol svg.device { margin-right: 8px; }
+.ef-phonograph .vol input { -webkit-appearance: none; appearance: none; width: 160px; height: 4px; margin: 0; background: linear-gradient(90deg, #d6ccff 70%, rgba(255,255,255,.14) 70%); outline: none; cursor: pointer; }
+.ef-phonograph .vol input::-webkit-slider-thumb { -webkit-appearance: none; width: 12px; height: 12px; background: var(--ink); border: 0; }
+.ef-phonograph .vol input::-moz-range-thumb { width: 12px; height: 12px; background: var(--ink); border: 0; border-radius: 0; }
+/* transport: shuffle, previous, pause, next, repeat (stroke icons; fill for the play-side glyphs) */
+.ef-phonograph .ctrls { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: flex; align-items: center; gap: 26px; color: var(--ink); }
+.ef-phonograph .ctrls svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.ef-phonograph .ctrls svg.fill { fill: currentColor; stroke: none; }
+.ef-phonograph .ctrls svg.big { width: 30px; height: 30px; }
+.ef-phonograph .titles .t { font: 600 17px "Segoe UI", system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ef-phonograph .titles .s { font: 12px Consolas, monospace; letter-spacing: .12em; color: var(--dim); margin-top: 4px; }
+
+/* light pill, right side */
+.ef-phonograph .pill { flex: none; background: #e8e9ee; color: #111; font: 600 12px Consolas, monospace; letter-spacing: .14em;
+  padding: 8px 16px; border-radius: 20px; }
+
+/* tiny ping + UID, bottom-left corner */
+.ef-phonograph .micro { position: absolute; left: 28px; bottom: 6px; font: 9px Consolas, monospace; letter-spacing: .16em; color: #55575e; }
+/* horizontal playlist and folder strip under the track list (mock) */
+.ef-phonograph .strip { display: flex; gap: 18px; margin-bottom: 26px; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, #000 88%, transparent); mask-image: linear-gradient(90deg, #000 88%, transparent); }
+.ef-phonograph .strip .pl { flex: none; width: 88px; }
+.ef-phonograph .strip .pc { position: relative; width: 88px; height: 88px; background: #26282d; overflow: hidden;
+  clip-path: polygon(0 0, calc(100% - 8%) 0, 100% 8%, 100% 100%, 8% 100%, 0 calc(100% - 8%)); }
+.ef-phonograph .strip .pc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .5; }
+.ef-phonograph .strip .pn { margin-top: 8px; font: 12px Consolas, monospace; letter-spacing: .1em; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+/* page background: the page painted this on html+body (double paint was opaque -> one layer here) */
+.ef-phonograph { background:
+  radial-gradient(ellipse 30% 38% at 4% 44%, rgba(190,160,255,.34), transparent 70%),
+  radial-gradient(ellipse 16% 16% at 30% 30%, rgba(170,140,255,.24), transparent 70%),
+  radial-gradient(ellipse 22% 12% at 22% 70%, rgba(210,180,255,.20), transparent 70%),
+  radial-gradient(ellipse 12% 18% at 34% 55%, rgba(150,120,240,.18), transparent 70%),
+  linear-gradient(rgba(15,15,16,.55), rgba(15,15,16,.85)),
+  url(../assets/topo-floor-strip.svg) center / cover,
+  #0F0F10 !important; }
+/* body::after -> top-right hatch layer (paints over the content, as on the page).
+   will-change: the page's fixed pseudos were composited layers; keeping these layers composited
+   preserves the page's grayscale text rasterization (LCD AA flipped pixels otherwise). */
+.ef-phonograph .bg-hatch { position: absolute; right: 0; top: 0; width: 260px; height: 260px; pointer-events: none; will-change: transform;
+  background: repeating-linear-gradient(135deg, rgba(255,255,255,.14) 0 2px, transparent 2px 7px);
+  -webkit-mask-image: linear-gradient(225deg, #000 20%, transparent 75%); mask-image: linear-gradient(225deg, #000 20%, transparent 75%); }
+/* body::before -> concentric dot rings around the left anchor */
+.ef-phonograph .bg-rings { position: absolute; inset: 0; pointer-events: none; will-change: transform;
+  background: repeating-radial-gradient(circle at 0% 50%, rgba(205,209,220,.05) 0 1px, transparent 1px 70px);
+  -webkit-mask-image: radial-gradient(circle at 0% 50%, #000 0 705px, transparent 706px); mask-image: radial-gradient(circle at 0% 50%, #000 0 705px, transparent 706px); }
+/* html::before -> dot grid outside the left glow */
+.ef-phonograph .bg-dot { position: absolute; inset: 0; pointer-events: none; will-change: transform;
+  background: radial-gradient(rgba(255,255,255,.07) 1px, transparent 1.3px) 0 0 / 14px 14px;
+  -webkit-mask-image: radial-gradient(circle at 0% 50%, transparent 0 760px, #000 800px); mask-image: radial-gradient(circle at 0% 50%, transparent 0 760px, #000 800px); }
+
+/* ===== LEFT DECK (v2): prev mini, featured album block, up-next minis - rules 24 + 22 ===== */
+.ef-phonograph .col { width: 930px; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; }
+.ef-phonograph .lblrow { display: flex; align-items: center; gap: 14px; width: 460px; }
+.ef-phonograph .lbl { font: 11px Consolas, monospace; letter-spacing: .22em; color: #55575e; }
+.ef-phonograph .lblrow .hr { flex: 1; height: 1px; background: rgba(255,255,255,.10); }
+.ef-phonograph .micro2 { font: 9px Consolas, monospace; letter-spacing: .18em; color: #43454c; }
+
+/* mini rows: chamfered cover + underbar, text stack, square-with-diagonal badge (rule 19 glyph) */
+.ef-phonograph .mini { display: flex; align-items: center; gap: 18px; padding: 7px 14px 7px 7px; cursor: pointer; }
+.ef-phonograph .mini .mc { position: relative; width: 104px; height: 104px; flex: none; overflow: hidden; background: #26282d;
+  clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px)); }
+.ef-phonograph .mini .mc img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: .45; }
+.ef-phonograph .mini .mc::after { content: ""; position: absolute; left: 0; bottom: 0; width: 100%; height: 3px;
+  background: linear-gradient(90deg, rgba(207,198,244,.95), rgba(207,198,244,0)); }
+.ef-phonograph .mini .tx { min-width: 0; }
+.ef-phonograph .mini .mt { font: 600 19px "Segoe UI", system-ui, sans-serif; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ef-phonograph .mini .ms { font: 11px Consolas, monospace; letter-spacing: .14em; color: var(--dim); margin-top: 4px; }
+.ef-phonograph .mini .mc2 { font: 9px Consolas, monospace; letter-spacing: .16em; color: #43454c; margin-top: 6px; }
+.ef-phonograph .mini .badge { flex: none; margin-left: 16px; width: 15px; height: 15px; border: 1.5px solid #55575e;
+  background: linear-gradient(45deg, transparent 44%, #55575e 44% 56%, transparent 56%); }
+.ef-phonograph .mini:hover .mt { color: #fff; }
+.ef-phonograph .mini:hover .mc img { opacity: .75; }
+.ef-phonograph .mini.small { padding-top: 2px; }
+.ef-phonograph .mini.small .mc { width: 84px; height: 84px; }
+.ef-phonograph .mini.small .mt { font-size: 16px; }
+
+/* featured album block: one purple slab behind everything - the gradient includes the artwork */
+.ef-phonograph .feat { position: relative; display: flex; width: 930px; height: 400px; margin: 4px 0; }
+.ef-phonograph .feat::before { content: ""; position: absolute; inset: 0; pointer-events: none; border-radius: 18px; opacity: .8;
+  background: linear-gradient(90deg, rgba(198,186,236,.92) 0%, rgba(186,172,230,.85) 40%, rgba(179,167,230,.62) 55%, rgba(179,167,230,.30) 72%, rgba(179,167,230,.08) 88%, transparent 100%); }
+
+/* the art slot: a bit smaller than the slab, so the art lays over it and casts a shadow on it */
+.ef-phonograph .fslot { position: relative; flex: none; width: 372px; height: 372px; margin: 14px 0 14px 18px;
+  filter: drop-shadow(7px 11px 16px rgba(8,6,18,.55)) drop-shadow(0 2px 5px rgba(8,6,18,.45)); }
+.ef-phonograph .fcard { position: relative; width: 100%; height: 100%; overflow: hidden; color: #14131a;
+  clip-path: polygon(0 0, calc(100% - 28px) 0, 100% 28px, 100% 100%, 28px 100%, 0 calc(100% - 28px));
+  background: radial-gradient(130% 130% at 16% 10%, #e8e2fa, #d3c7f3 55%, #b6a8e8 100%); }
+.ef-phonograph .fcard .topo { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; opacity: .42; }
+.ef-phonograph .fcard .dots { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(rgba(20,19,26,.15) 1px, transparent 1.4px) 0 0 / 13px 13px;
+  -webkit-mask-image: linear-gradient(215deg, #000 32%, transparent 80%); mask-image: linear-gradient(215deg, #000 32%, transparent 80%); }
+.ef-phonograph .fcard .grain { position: absolute; inset: 0; pointer-events: none; opacity: .15; mix-blend-mode: overlay;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E") 0 0 / 120px 120px; }
+.ef-phonograph .fcard .barcode { position: absolute; left: 18px; bottom: 36px; width: 116px; height: 13px; opacity: .6;
+  background: repeating-linear-gradient(90deg, #14131a 0 2px, transparent 2px 4px, #14131a 4px 7px, transparent 7px 11px, #14131a 11px 12px, transparent 12px 15px); }
+.ef-phonograph .fcard .mcode { position: absolute; left: 18px; bottom: 16px; font: 9px Consolas, monospace; letter-spacing: .16em; color: rgba(20,19,26,.75); }
+
+/* extension plate: text over the right, fading end of the slab; motif centred behind */
+.ef-phonograph .fext { position: relative; flex: 1; height: 100%; overflow: hidden; padding: 30px 24px 20px 42px; }
+.ef-phonograph .fext .tri { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 360px; height: 280px; pointer-events: none; }
+.ef-phonograph .fext .tri-in { width: 100%; height: 100%; }
+.ef-phonograph .fext .tri svg { width: 100%; height: 100%; }
+.ef-phonograph .fext .ft { position: relative; font: 600 36px "Segoe UI", system-ui, sans-serif; color: #fff;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ef-phonograph .fext .fa { position: relative; margin-top: 5px; font: 600 12px Consolas, monospace; letter-spacing: .24em; color: #241f38; }
+.ef-phonograph .fext .frule { position: relative; margin-top: 16px; width: 330px; height: 1px; background: rgba(241,241,244,.42); }
+.ef-phonograph .fext .flyr { position: relative; margin-top: 14px; font: 17px "Segoe UI", system-ui, sans-serif;
+  line-height: 1.55; color: rgba(241,241,244,.52); white-space: nowrap; }
+.ef-phonograph .fext .flyr .cur { margin-left: -13px; padding-left: 10px; border-left: 3px solid var(--yellow);
+  color: #fff; font-weight: 600; font-size: 21px; }
+.ef-phonograph .fext .fbot { position: absolute; left: 42px; bottom: 20px; display: flex; align-items: center; gap: 16px; }
+.ef-phonograph .triband { display: inline-flex; width: 132px; height: 5px; }
+.ef-phonograph .triband i { flex: 1; }
+.ef-phonograph .triband i:nth-child(1) { background: var(--yellow); }
+.ef-phonograph .triband i:nth-child(2) { background: #21e6e6; }
+.ef-phonograph .triband i:nth-child(3) { background: #e621c8; }
+.ef-phonograph .fext .fbot .barcode2 { width: 84px; height: 11px; opacity: .55;
+  background: repeating-linear-gradient(90deg, #cfc6f4 0 2px, transparent 2px 5px, #cfc6f4 5px 6px, transparent 6px 9px); }

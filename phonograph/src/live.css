@@ -1,0 +1,125 @@
+/* The live phonograph's additions on top of the mock's phonograph.css (kept 1:1): the parts the mock drew as
+   static pictures and the app needs to work - a real search input, the scrolling strip and list, the list header,
+   the real cover in the featured card, transport states, the visualizer as a seek bar. Same tokens as the mock. */
+
+/* window: the mock is 1920x1080 fixed px; .ph-host zooms it to the window (app.js keeps --z current) */
+.ph-host { position: fixed; inset: 0; z-index: 2147483000; overflow: hidden; background: #0F0F10; }
+.ph-host > .ef-phonograph { position: absolute; left: 0; top: 0; zoom: var(--z, 1);
+  width: calc(100vw / var(--z, 1)); height: calc(100vh / var(--z, 1)); }
+
+/* search: the mock's .search box hosting a real input */
+.ef-phonograph .search { cursor: text; }
+.ef-phonograph .search .q { flex: 1; min-width: 0; height: 100%; border: 0; outline: 0; background: transparent; padding: 0;
+  font: 13px "JetBrains Mono", monospace; letter-spacing: .14em; color: var(--ink); text-transform: uppercase; }
+.ef-phonograph .search .q::placeholder { color: #8a8e96; }
+.ef-phonograph .search:focus-within { border-color: rgba(255,250,0,.45); }
+
+/* the list column fills the height: strip, header, then rows scrolling inside */
+.ef-phonograph .main { align-items: stretch; padding-top: 18px; padding-bottom: 46px; }
+.ef-phonograph .col { justify-content: center; }
+.ef-phonograph .list { min-height: 0; }
+.ef-phonograph .rows { flex: 1; min-height: 0; overflow-y: auto; margin: 0 -8px 34px 0; padding-right: 8px; scrollbar-width: none; }
+.ef-phonograph .rows::-webkit-scrollbar { display: none; }
+.ef-phonograph .row { cursor: pointer; }
+.ef-phonograph .row:hover { background: rgba(255,255,255,.04); }
+.ef-phonograph .row.on:hover { background: rgba(207,198,244,.16); }
+.ef-phonograph .row .rl { min-width: 44px; text-align: right; }
+.ef-phonograph .rows { transition: opacity .12s; }
+
+/* strip: every playlist, scrolls sideways (wheel), fade at the right edge like the mock */
+.ef-phonograph .strip { flex: none; overflow-x: auto; scrollbar-width: none; padding-bottom: 2px; }
+.ef-phonograph .strip::-webkit-scrollbar { display: none; }
+.ef-phonograph .strip .pl { cursor: pointer; }
+.ef-phonograph .strip .pl:hover .pc img { opacity: .85; }
+.ef-phonograph .strip .pl:hover .pn { color: #fff; }
+.ef-phonograph .strip .pc.liked { display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(255,250,0,.30), rgba(255,250,0,.55)); }
+.ef-phonograph .strip .pc.liked svg { width: 34px; height: 34px; fill: #fffbb0; }
+
+/* list header: what the list is showing (mode + name), back to now playing, the mock's sort pill on the right */
+.ef-phonograph .lhead { flex: none; display: flex; align-items: center; gap: 12px; margin-bottom: 14px; min-width: 0; }
+.ef-phonograph .lhead .lmode { flex: none; font: 700 11px "JetBrains Mono", monospace; letter-spacing: .2em; color: var(--yellow); }
+.ef-phonograph .lhead .lname { min-width: 0; font: 12px "JetBrains Mono", monospace; letter-spacing: .14em; color: var(--dim);
+  text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ef-phonograph .lhead .lback { flex: none; cursor: pointer; font: 18px "JetBrains Mono", monospace; line-height: 1; color: #8a8e96;
+  padding: 0 4px; }
+.ef-phonograph .lhead .lback:hover { color: #fff; }
+.ef-phonograph .lhead .sort { margin: 0 0 0 auto; flex: none; }
+
+/* featured card: the real cover under the mock's layers (topo multiply turned down so the art reads) */
+.ef-phonograph .fcard .cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.ef-phonograph .fcard .topo { opacity: .14; }
+.ef-phonograph .fcard .mcode { color: rgba(241,241,244,.85); text-shadow: 0 1px 2px rgba(0,0,0,.6); }
+.ef-phonograph .fcard .barcode { background: repeating-linear-gradient(90deg, #f1f1f4 0 2px, transparent 2px 4px, #f1f1f4 4px 7px,
+  transparent 7px 11px, #f1f1f4 11px 12px, transparent 12px 15px); opacity: .55; }
+.ef-phonograph .flyr .dim { color: rgba(241,241,244,.75); }
+.ef-phonograph .mini .mc img { opacity: .8; }
+.ef-phonograph .mini:hover .mc img { opacity: 1; }
+
+/* transport */
+.ef-phonograph .ctrls svg { cursor: pointer; opacity: .9; }
+.ef-phonograph .ctrls svg:hover { opacity: 1; color: #fff; }
+.ef-phonograph .ctrls .shuf.on, .ef-phonograph .ctrls .rep.on { color: var(--yellow); }
+.ef-phonograph .ctrls .rep.one { filter: drop-shadow(0 0 3px rgba(255,250,0,.6)); }
+.ef-phonograph .timer { cursor: pointer; }
+.ef-phonograph .timer .pp { display: inline-flex; gap: 3px; }
+.ef-phonograph .timer .pp i { width: 3px; height: 12px; background: var(--ink); }
+.ef-phonograph .timer .pp.paused { gap: 0; width: 9px; height: 12px; background: var(--ink);
+  clip-path: polygon(0 0, 100% 50%, 0 100%); }
+.ef-phonograph .timer .pp.paused i { display: none; }
+.ef-phonograph .vol .spk { cursor: pointer; }
+
+/* the visualizer strip is the seek bar */
+.ef-phonograph .viz { pointer-events: auto; cursor: pointer; }
+
+/* ===== accent: the mock's violet follows the cover (app.js sets --h = hue, --s = saturation factor) =====
+   each colour = hsl(--h + (its hue - 254), its saturation x --s, its exact lightness) - values from the mock */
+.ef-phonograph { --h: 254; --s: 1;
+  --acc-vol: hsl(calc(var(--h) - 2) calc(100% * var(--s)) 90%);              /* #d6ccff */
+  --acc-bc2: hsl(calc(var(--h) - 2) calc(67.6% * var(--s)) 86.7%);           /* #cfc6f4 */ }
+.ef-phonograph .feat::before {
+  background: linear-gradient(90deg,
+    hsl(calc(var(--h) + .4) calc(56.8% * var(--s)) 82.7% / .92) 0%,
+    hsl(calc(var(--h) + .5) calc(53.7% * var(--s)) 78.8% / .85) 40%,
+    hsl(calc(var(--h) - 2.6) calc(55.8% * var(--s)) 77.8% / .62) 55%,
+    hsl(calc(var(--h) - 2.6) calc(55.8% * var(--s)) 77.8% / .30) 72%,
+    hsl(calc(var(--h) - 2.6) calc(55.8% * var(--s)) 77.8% / .08) 88%, transparent 100%); }
+.ef-phonograph .mini .mc::after { background: linear-gradient(90deg,
+  hsl(calc(var(--h) - 2.3) calc(67.6% * var(--s)) 86.7% / .95), hsl(calc(var(--h) - 2.3) calc(67.6% * var(--s)) 86.7% / 0)); }
+.ef-phonograph .row.on { background: hsl(calc(var(--h) - 2.3) calc(67.6% * var(--s)) 86.7% / .12); }
+.ef-phonograph .row.on:hover { background: hsl(calc(var(--h) - 2.3) calc(67.6% * var(--s)) 86.7% / .16); }
+.ef-phonograph .fext .fa { color: hsl(calc(var(--h) - 2) calc(28.7% * var(--s)) 17.1%); }
+.ef-phonograph .fcard { background: radial-gradient(130% 130% at 16% 10%,
+  hsl(calc(var(--h) + 1) calc(70.6% * var(--s)) 93.3%), hsl(calc(var(--h) + 2.4) calc(64.7% * var(--s)) 86.7%) 55%,
+  hsl(calc(var(--h) - 1) calc(58.2% * var(--s)) 78.4%) 100%); }
+
+/* the four static glows of the mock's background moved to the fairy-light canvas; the rest of the ground stays */
+.ef-phonograph { background: linear-gradient(rgba(15,15,16,.55), rgba(15,15,16,.85)),
+  url(../assets/topo-floor-strip.svg) center / cover, #0F0F10 !important; }
+.ef-phonograph .bg-lights { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+
+/* the card's small print sits on the cover: a dark scrim along the bottom edge keeps it readable (Mario) */
+.ef-phonograph .fcard .scrim { position: absolute; left: 0; right: 0; bottom: 0; height: 86px; pointer-events: none;
+  background: linear-gradient(0deg, rgba(10,10,12,.82), rgba(10,10,12,.55) 55%, transparent); }
+
+/* titles in any script: our fonts first, Noto CJK for Japanese / Korean / Chinese */
+.ef-phonograph .fext .ft, .ef-phonograph .mini .mt, .ef-phonograph .row .rt, .ef-phonograph .titles .t,
+.ef-phonograph .fext .flyr { font-family: Inter, "Noto Sans CJK JP", "Noto Sans CJK KR", system-ui, sans-serif; }
+
+/* Spotify Connect: the mock's devices glyph (yellow while playing on another device) + a small picker above it */
+.ef-phonograph .vol .device { cursor: pointer; }
+.ef-phonograph .vol .device.remote { color: var(--yellow); }
+.ef-phonograph .devs { position: absolute; right: 28px; bottom: 74px; width: 300px; display: none; z-index: 5;
+  padding: 12px 0 8px; background: rgba(12,13,15,.96); border: 1px solid rgba(255,255,255,.16); }
+.ef-phonograph .devs::before { content: ""; position: absolute; left: 0; top: 0; width: 3px; height: 100%;
+  background: hsl(calc(var(--h) - 2.3) calc(67.6% * var(--s)) 86.7%); }
+.ef-phonograph .devs.open { display: block; }
+.ef-phonograph .devs .dh { padding: 0 16px 8px; font: 700 11px "JetBrains Mono", monospace; letter-spacing: .2em; color: var(--dim); }
+.ef-phonograph .devs .dv { display: flex; align-items: center; gap: 12px; padding: 9px 16px; cursor: pointer;
+  font: 13px "JetBrains Mono", monospace; letter-spacing: .08em; color: var(--ink); }
+.ef-phonograph .devs .dv:hover { background: rgba(255,255,255,.05); }
+.ef-phonograph .devs .dv .dt { font-style: normal; width: 30px; font-size: 9px; letter-spacing: .16em; color: #55575e; }
+.ef-phonograph .devs .dv span { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ef-phonograph .devs .dv b { font: 700 8px "JetBrains Mono", monospace; letter-spacing: .14em; color: #111; background: var(--yellow);
+  padding: 2px 5px; }
+.ef-phonograph .devs .dv.on span { color: var(--yellow); }
