@@ -48,6 +48,6 @@ Dead: Spotify's audio-analysis (hence the cava relay), Spicetify.colorExtractor 
   starts bare (Mario: fine), one low notification per version, the next launch retries. Plain `backup apply` on fresh
   files refuses ("A backup is available ... restore first"). Costs ~20s on the first launch after an update. Log:
   `journalctl -t spotify-refresh`. Tested by `spotify-launcher --force-update --no-exec` (same version, fresh files).
-- The "..." top-left is drawn natively by Spotify, not in the page - CSS can't hide it (open).
+- The "..." top-left is drawn natively by Spotify, not in the page - CSS can't hide it (left as is, Mario 2026-10-14).
 - Dev loop (VM): `spot-debug` relaunches Spotify with --remote-debugging-port=9222; drive the page over CDP; hot
   deploy = copy the bundle into Apps/xpui/extensions/ + reload the page (playback keeps going).
