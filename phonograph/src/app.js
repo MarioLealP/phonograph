@@ -326,11 +326,80 @@
     };
     const openContext = (uri) => load("ctx", () => sp.tracks(uri));
     const runSearch = (text) => load("search", async () => ({ name: text.toUpperCase(), rows: await sp.search(text) }));
-    sortSel.addEventListener("change", renderList);
+    sortSel.addEventListener("change", () => {
+      renderList();
+      rowsEl.scrollTop = 0; // a new order starts at its top (Mario)
+    });
     $(".lback").addEventListener("click", () => {
       q.value = "";
       showNow();
     });
+
+    /* ---- middle-click autoscroll (Mario; Windows-style - Linux Chromium has none): middle-click in the list or the
+       strip drops an anchor; the view scrolls toward the pointer, faster the further away (dead zone around the
+       anchor). Click-release = stays on until the next click; middle-held + moved = stops on release; Esc stops. ---- */
+    const anchor = EF.D("ph-anchor", el,
+      '<svg viewBox="0 0 32 32"><circle cx="16" cy="16" r="13"/><path class="up" d="M11 11l5-5 5 5"/>'
+      + '<path class="dn" d="M11 21l5 5 5-5"/><path class="lf" d="M11 11l-5 5 5 5"/><path class="rt" d="M21 11l5 5-5 5"/>'
+      + '<circle class="dot" cx="16" cy="16" r="2"/></svg>');
+    const auto = { on: false, box: null, axis: "y", x: 0, y: 0, px: 0, py: 0, moved: false, held: false, carry: 0 };
+    function zoomOf() {
+      return parseFloat(el.parentNode?.style.getPropertyValue("--z")) || 1;
+    }
+    function stopAuto() {
+      auto.on = false;
+      anchor.classList.remove("on");
+      el.classList.remove("autoscrolling");
+    }
+    el.addEventListener("mousedown", (e) => {
+      if (auto.on) { // any click ends it (and doesn't also click what's under the pointer)
+        e.preventDefault();
+        e.stopPropagation();
+        stopAuto();
+        return;
+      }
+      if (e.button !== 1) return;
+      const box = e.target.closest(".rows, .strip");
+      if (!box) return;
+      e.preventDefault(); // no primary-selection paste / native behaviour
+      const z = zoomOf(), hr = el.getBoundingClientRect();
+      Object.assign(auto, { on: true, box, axis: box.classList.contains("strip") ? "x" : "y", x: e.clientX, y: e.clientY,
+        px: e.clientX, py: e.clientY, moved: false, held: true, carry: 0 });
+      anchor.style.left = (e.clientX - hr.left) / z + "px";
+      anchor.style.top = (e.clientY - hr.top) / z + "px";
+      anchor.dataset.axis = auto.axis;
+      anchor.classList.add("on");
+      el.classList.add("autoscrolling");
+    }, true);
+    el.addEventListener("mousemove", (e) => {
+      if (!auto.on) return;
+      auto.px = e.clientX;
+      auto.py = e.clientY;
+      if (Math.hypot(e.clientX - auto.x, e.clientY - auto.y) > 12) auto.moved = true;
+    });
+    addEventListener("mouseup", (e) => {
+      if (auto.on && e.button === 1) {
+        if (auto.moved) stopAuto(); // held + dragged = stop on release; plain click = keep going
+        auto.held = false;
+      }
+    });
+    el.addEventListener("click", (e) => { if (e.button === 1) e.preventDefault(); });
+    el.addEventListener("auxclick", (e) => { if (e.button === 1) e.preventDefault(); });
+    addEventListener("keydown", (e) => { if (auto.on && e.key === "Escape") stopAuto(); });
+    function stepAuto(dt) {
+      if (!auto.on) return;
+      const d = auto.axis === "y" ? auto.py - auto.y : auto.px - auto.x, dead = 12;
+      anchor.classList.toggle("fwd", d > dead);
+      anchor.classList.toggle("back", d < -dead);
+      if (Math.abs(d) <= dead) return;
+      // px per second grows faster than the distance: fine control near the anchor, fast far away
+      const speed = Math.sign(d) * Math.pow(Math.abs(d) - dead, 1.35) * 4.5;
+      auto.carry += (speed * dt) / 1000 / zoomOf();
+      const step = Math.trunc(auto.carry);
+      auto.carry -= step;
+      if (auto.axis === "y") auto.box.scrollTop += step;
+      else auto.box.scrollLeft += step;
+    }
 
     /* ---- search ---- */
     let typing = 0;
@@ -582,6 +651,7 @@
       vt += dt * (0.2 + 0.8 * level); // the wave slows down with the music
       last = nowT;
       stepAccent(dt);
+      stepAuto(dt);
       drawLights(nowT, dt);
       timeEl.textContent = clock(sp.progress()) + " / " + clock(sp.duration());
       drawViz(vt);
