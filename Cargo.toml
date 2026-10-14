@@ -1,0 +1,8 @@
+# The Rust part of the phonograph: phonograph-audio (cava -> WebSocket spectrum relay). The skin itself
+# (phonograph/, Themes/) is plain files.
+[workspace]
+members = ["audio-relay"]
+resolver = "3"
+
+[profile.release]
+strip = true

@@ -3,10 +3,15 @@
 # Runs at every launch (spotify-launcher.desktop Exec): update Spotify if a new one is out; if Spotify's files are
 # fresh (a new install / update leaves Apps/xpui.spa packed - applied Spicetify unpacks it), update Spicetify and
 # re-apply it. If Spicetify can't handle the new Spotify yet, Spotify starts bare and the next launch tries again.
+# Also re-applies when the phonograph package updated the extension / theme (/usr/share/phonograph) since the last
+# apply - a package update lands at the next launch.
 # Usage: spotify-refresh [--launch [spotify-launcher args...]]
 set -u
 SP="$HOME/.local/share/spotify-launcher/install/usr/share/spotify"
 STATE="${XDG_STATE_HOME:-$HOME/.local/state}/spotify-refresh"
+SKIN=/usr/share/phonograph
+skin_hash() { cat "$SKIN"/Extensions/phonograph.js "$SKIN"/Themes/clockmost/* 2>/dev/null | sha256sum | cut -c1-16; }
+mkdir -p "$STATE"
 log() { logger -t spotify-refresh -- "$*"; echo "spotify-refresh: $*" >&2; }
 
 spotify-launcher --check-update --no-exec >/dev/null 2>&1 || log "update check failed (offline?) - keeping the installed Spotify"
@@ -19,14 +24,22 @@ if [ -e "$SP/Apps/xpui.spa" ]; then
     timeout 120 spicetify -q -n update </dev/null >/dev/null 2>&1
     [ -e "$SP/Apps/xpui.spa" ] && timeout 120 spicetify -n restore backup apply </dev/null >/dev/null 2>&1
     if [ ! -e "$SP/Apps/xpui.spa" ]; then
+        skin_hash >"$STATE/applied-skin"
         log "Spicetify applied on Spotify $version"
     else
         log "Spicetify can't apply on Spotify $version yet - starting bare, next launch retries"
-        mkdir -p "$STATE"
         if [ "$(cat "$STATE/bare-notified" 2>/dev/null)" != "$version" ]; then # tell once per version
             notify-send -a Spotify -u low "Spotify updated" "The phonograph skin is off until Spicetify supports this Spotify - it re-applies by itself." || true
             echo "$version" >"$STATE/bare-notified"
         fi
+    fi
+elif [ "$(skin_hash)" != "$(cat "$STATE/applied-skin" 2>/dev/null)" ]; then
+    # same Spotify, new phonograph files from a package update
+    if timeout 120 spicetify -n apply </dev/null >/dev/null 2>&1; then
+        skin_hash >"$STATE/applied-skin"
+        log "phonograph skin re-applied (package update)"
+    else
+        log "spicetify apply failed - keeping the previous skin"
     fi
 fi
 

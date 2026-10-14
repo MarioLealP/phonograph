@@ -1,0 +1,10 @@
+[Unit]
+Description=phonograph-audio: live music spectrum (cava) for the Spotify phonograph skin
+After=pipewire.service
+
+[Service]
+ExecStart=/usr/bin/phonograph-audio
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

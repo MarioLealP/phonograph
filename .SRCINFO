@@ -1,0 +1,24 @@
+pkgbase = phonograph
+	pkgdesc = The clockmost phonograph: an Endfield Spotify skin (Spicetify) with a live cava spectrum, kept applied across Spotify updates
+	pkgver = 0.1.0
+	pkgrel = 1
+	url = https://git.clockmost.com/pkgs/phonograph
+	install = phonograph.install
+	arch = x86_64
+	license = MIT
+	makedepends = rust
+	makedepends = cargo
+	makedepends = mold
+	makedepends = python
+	depends = gcc-libs
+	depends = glibc
+	depends = spotify-launcher
+	depends = cava
+	depends = noto-fonts-cjk
+	depends = ttf-jetbrains-mono
+	depends = inter-font
+	depends = libnotify
+	options = !lto
+	options = !debug
+
+pkgname = phonograph

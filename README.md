@@ -14,19 +14,22 @@ hsl(cover hue + offset, sat x factor, the mock's lightness)); the background glo
 dance to the music (bass swells the glows, each mote follows its own band); barcodes are generated from the
 track / album / list name.
 
-## Layout of this folder
+## Layout of this repo
 - `phonograph/src/` - `core.js` + `phonograph.css` copied from the mock (unchanged), `live.css` (additions),
   `spotify.js` (data layer: every Spicetify call), `app.js` (the UI). `phonograph/build.py` bundles them into
   `Extensions/phonograph.js` (fonts mapped Consolas -> JetBrains Mono, Segoe UI -> Inter; SVGs inlined).
 - `Themes/clockmost/` - hides Spotify's chrome.
-- `audio-relay/` - `phonograph-audio` (Rust): cava (pulse input = what you hear) -> 48 bars over
+- `audio-relay/` - `phonograph-audio` (Rust, the repo's one Cargo workspace member): cava (pulse input = what you hear) -> 48 bars over
   ws://127.0.0.1:47862, cava running only while a page is connected. User service `phonograph-audio.service`.
 
-## Install
-spicetify config spotify_path ~/.local/share/spotify-launcher/install/usr/share/spotify
-  prefs_path ~/.config/spotify/prefs current_theme clockmost color_scheme clockmost extensions phonograph.js
-  inject_css 1 replace_colors 1; spicetify backup apply. Also: noto-fonts-cjk (Japanese / Korean titles), cava,
-phonograph-audio + its user service.
+## Install (package: pkgs/phonograph, `[clockmost]` repo)
+
+`pacman -S phonograph`, start Spotify once and log in, then `clockmost-desktop-setup` as your user (from
+clockmost-shell): it enables `phonograph-audio` (user service), puts the `spotify-launcher.desktop` override in
+`~/.local/share/applications` (launches go through `spotify-refresh`), installs Spicetify per-user if missing (upstream
+installer -> `~/.local/bin`; not in Arch's repos, and it must be able to update itself), links the extension + theme
+from `/usr/share/phonograph` into Spicetify's config, sets the config and applies. Package updates reach Spotify at its
+next launch: `spotify-refresh` re-applies when `/usr/share/phonograph`'s files changed since the last apply.
 
 ## Data (probed live on Spotify 1.3.4.258 + Spicetify 2.45.3 - past its tested Linux range of 1.2.96)
 now playing Player.data.item; prev/next Spicetify.Queue; queue PlayerAPI.getQueue; lyrics spclient color-lyrics/v2

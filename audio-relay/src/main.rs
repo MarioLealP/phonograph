@@ -46,6 +46,7 @@ fn pump(clients: &Clients) -> Result<()> {
             std::thread::sleep(Duration::from_millis(200));
             continue;
         }
+        // nosemgrep: clockmost-shell-out  fixed program, the only argument is our own config file in XDG_RUNTIME_DIR
         let mut cava: Child = Command::new("cava")
             .arg("-p")
             .arg(&conf)
@@ -56,7 +57,12 @@ fn pump(clients: &Clients) -> Result<()> {
         let mut out = BufReader::new(cava.stdout.take().context("cava stdout")?);
         let mut raw = [0u8; BARS * 2];
         while out.read_exact(&mut raw).is_ok() {
-            let frame: Vec<u8> = raw.as_chunks::<2>().0.iter().map(|b| (u16::from_le_bytes(*b) >> 8) as u8).collect();
+            let frame: Vec<u8> = raw
+                .as_chunks::<2>()
+                .0
+                .iter()
+                .map(|b| (u16::from_le_bytes(*b) >> 8) as u8)
+                .collect();
             let mut list = clients.lock().expect("clients lock");
             list.retain_mut(|ws| ws.send(Message::Binary(frame.clone().into())).is_ok());
             if list.is_empty() {
