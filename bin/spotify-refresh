@@ -1,0 +1,36 @@
+#!/bin/bash
+# spotify-refresh: Spotify always current, Spicetify kept up with it - nobody updates either by hand (Mario 2026-10-14).
+# Runs at every launch (spotify-launcher.desktop Exec): update Spotify if a new one is out; if Spotify's files are
+# fresh (a new install / update leaves Apps/xpui.spa packed - applied Spicetify unpacks it), update Spicetify and
+# re-apply it. If Spicetify can't handle the new Spotify yet, Spotify starts bare and the next launch tries again.
+# Usage: spotify-refresh [--launch [spotify-launcher args...]]
+set -u
+SP="$HOME/.local/share/spotify-launcher/install/usr/share/spotify"
+STATE="${XDG_STATE_HOME:-$HOME/.local/state}/spotify-refresh"
+log() { logger -t spotify-refresh -- "$*"; echo "spotify-refresh: $*" >&2; }
+
+spotify-launcher --check-update --no-exec >/dev/null 2>&1 || log "update check failed (offline?) - keeping the installed Spotify"
+
+if [ -e "$SP/Apps/xpui.spa" ]; then
+    version=$(sed -n 's/.*"version":"\([^"]*\)".*/\1/p' "$HOME/.local/share/spotify-launcher/state.json")
+    log "Spotify $version is unskinned - updating + re-applying Spicetify"
+    # `update` updates Spicetify if a new one is out AND re-applies it (-n: don't start Spotify - it would otherwise);
+    # restore + backup + apply is the documented fallback. Timeouts: a stuck spicetify must never hang the launch.
+    timeout 120 spicetify -q -n update </dev/null >/dev/null 2>&1
+    [ -e "$SP/Apps/xpui.spa" ] && timeout 120 spicetify -n restore backup apply </dev/null >/dev/null 2>&1
+    if [ ! -e "$SP/Apps/xpui.spa" ]; then
+        log "Spicetify applied on Spotify $version"
+    else
+        log "Spicetify can't apply on Spotify $version yet - starting bare, next launch retries"
+        mkdir -p "$STATE"
+        if [ "$(cat "$STATE/bare-notified" 2>/dev/null)" != "$version" ]; then # tell once per version
+            notify-send -a Spotify -u low "Spotify updated" "The phonograph skin is off until Spicetify supports this Spotify - it re-applies by itself." || true
+            echo "$version" >"$STATE/bare-notified"
+        fi
+    fi
+fi
+
+if [ "${1:-}" = "--launch" ]; then
+    shift
+    exec spotify-launcher --skip-update "$@"
+fi

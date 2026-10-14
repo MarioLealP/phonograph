@@ -40,7 +40,14 @@ Dead: Spotify's audio-analysis (hence the cava relay), Spicetify.colorExtractor 
 - A custom app crashed Spotify's UI on some starts (Spicetify renders its nav links before React is ready on 1.3.4)
   - hence the extension.
 - Spotify runs on XWayland: launching over ssh needs DISPLAY + XAUTHORITY. Prefs exist only after the first login.
-- spotify-launcher updates Spotify on launch; a new Spotify can break Spicetify until re-apply.
+- Updates are automatic (Mario 2026-10-14: "let it update", never touch Spicetify by hand): `bin/spotify-refresh`
+  (-> ~/.local/bin) runs at every launch via `spotify-launcher.desktop` (-> ~/.local/share/applications, overrides the
+  package's entry; the dock / drawer / menu all launch through it). It updates Spotify; fresh files (Apps/xpui.spa
+  still packed) -> `spicetify -q -n update` (updates Spicetify AND re-applies; without -n it starts Spotify and the
+  launch hangs), fallback `spicetify -n restore backup apply`. Still packed = Spicetify can't do this Spotify yet:
+  starts bare (Mario: fine), one low notification per version, the next launch retries. Plain `backup apply` on fresh
+  files refuses ("A backup is available ... restore first"). Costs ~20s on the first launch after an update. Log:
+  `journalctl -t spotify-refresh`. Tested by `spotify-launcher --force-update --no-exec` (same version, fresh files).
 - The "..." top-left is drawn natively by Spotify, not in the page - CSS can't hide it (open).
 - Dev loop (VM): `spot-debug` relaunches Spotify with --remote-debugging-port=9222; drive the page over CDP; hot
   deploy = copy the bundle into Apps/xpui/extensions/ + reload the page (playback keeps going).
