@@ -93,14 +93,16 @@
       + '<div class="strip"></div>'
       + '<div class="lhead"><span class="lmode"></span><span class="lname"></span><b class="lback" title="Back to what\'s playing">×</b>'
       + '<label class="sort">SORT BY'
-      + '<span class="pill-sel"><select><option value="">Default</option><option value="title">Title</option>'
-      + '<option value="artist">Artist</option><option value="ms">Length</option><option value="added">Date added</option></select><b>▾</b></span>'
+      + '<span class="pill-sel"><select><option value="">Default</option>'
+      + '<option value="added:-1">Date added · newest</option><option value="added:1">Date added · oldest</option>'
+      + '<option value="title:1">Title · A–Z</option><option value="title:-1">Title · Z–A</option>'
+      + '<option value="artist:1">Artist · A–Z</option><option value="artist:-1">Artist · Z–A</option>'
+      + '<option value="ms:1">Length · shortest</option><option value="ms:-1">Length · longest</option></select><b>▾</b></span>'
       + '</label></div>'
       + '<div class="rows"></div></div>'
       + '</div>'
       + '<div class="bar"><canvas class="viz"></canvas>'
       + '<div class="timer"><span class="pp"><i></i><i></i></span><span class="tm">00:00 / 00:00</span></div>'
-      + '<div class="titles"><div class="t"></div><div class="s"></div></div>'
       + '<div class="ctrls">'
       + '<svg class="shuf" viewBox="0 0 24 24"><path d="M3 6h3l9 12h3M3 18h3l9-12h3M15 6h6M18 3l3 3-3 3M18 15l3 3-3 3"/></svg>'
       + '<svg class="fill prev" viewBox="0 0 24 24"><path d="M6 5h2v14H6zM19 5 9 12l10 7z"/></svg>'
@@ -125,7 +127,7 @@
     const fmcode = fcard.querySelector(".mcode"), fbarcode = fcard.querySelector(".barcode");
     const mPrev = $(".m-prev"), mNext1 = $(".m-next1"), mNext2 = $(".m-next2");
     const rowsEl = $(".rows"), strip = $(".strip"), q = $(".q"), sortSel = $(".sort select");
-    const timeEl = $(".tm"), lineEl = $(".titles .t"), vol = $(".vol input");
+    const timeEl = $(".tm"), vol = $(".vol input");
 
     /* ---- the mock's motion helpers, unchanged ---- */
     const wait = (ms, fn) => setTimeout(fn, ms * EF.SLOW);
@@ -205,11 +207,10 @@
         return;
       }
       cover.src = now.cover;
-      // bottom-left: the track, not the lyric (Mario: the lyric already sits in the card)
-      lineEl.textContent = now.title;
-      $(".titles .s").textContent = now.artist.toUpperCase();
       ftitle.textContent = now.title;
-      fartist.textContent = now.artist.toUpperCase();
+      // artist and album open in the list, like a playlist (Mario)
+      fartist.innerHTML = '<a class="lnk ar">' + esc(now.artist.toUpperCase()) + '</a>'
+        + (now.album ? '<i class="sep">·</i><a class="lnk al">' + esc(now.album.toUpperCase()) + '</a>' : "");
       fmcode.textContent = code(now.artist, now.uri) + " · 33 RPM · SIDE A";
       fbarcode.style.background = barcode(now.title, 116, "#f1f1f4");
       $(".barcode2").style.background = barcode(now.album || now.title, 84, "var(--acc-bc2)");
@@ -232,6 +233,11 @@
         markPlaying();
       });
     }
+    fartist.addEventListener("click", (e) => {
+      if (!now) return;
+      if (e.target.closest(".ar") && now.artistUri) openContext(now.artistUri);
+      if (e.target.closest(".al") && now.albumUri) openContext(now.albumUri);
+    });
     mPrev.addEventListener("click", () => sp.back());
     mNext1.addEventListener("click", () => sp.skip());
     mNext2.addEventListener("click", () => { sp.skip(); setTimeout(() => sp.skip(), 250); });
@@ -262,9 +268,12 @@
     let mode = "now", rows = [], listName = "";
     const modeLabel = { now: "NOW PLAYING", ctx: "OPEN", search: "SEARCH" };
     function sorted() {
-      const k = sortSel.value;
+      // both directions for every key (Mario: newest and oldest added, ...): value = "key:1" ascending / "key:-1"
+      const [k, dir] = sortSel.value.split(":");
       if (!k) return rows;
-      return rows.slice().sort((a, b) => (k === "ms" ? (a.ms || 0) - (b.ms || 0) : String(a[k] || "").localeCompare(String(b[k] || ""))));
+      const d = +dir || 1;
+      return rows.slice().sort((a, b) => d * (k === "ms" ? (a.ms || 0) - (b.ms || 0)
+        : String(a[k] || "").localeCompare(String(b[k] || ""), undefined, { numeric: true, sensitivity: "base" })));
     }
     function renderList() {
       $(".lmode").textContent = modeLabel[mode];

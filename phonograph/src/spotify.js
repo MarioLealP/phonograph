@@ -28,6 +28,7 @@
       artist: md.artist_name || "",
       album: md.album_title || "",
       albumUri: md.album_uri || "",
+      artistUri: md.artist_uri || "",
       cover: img(md.image_xlarge_url || md.image_large_url || md.image_url, 640),
       ms: +md.duration || 0,
     };

@@ -123,3 +123,12 @@
 .ef-phonograph .devs .dv b { font: 700 8px "JetBrains Mono", monospace; letter-spacing: .14em; color: #111; background: var(--yellow);
   padding: 2px 5px; }
 .ef-phonograph .devs .dv.on span { color: var(--yellow); }
+
+/* the card's artist / album: two stacked lines, both open in the list (Mario). Each is capped at the rule's 330px so
+   the dark text never runs into the slab's dark, fading end. */
+.ef-phonograph .fext .fa { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; white-space: nowrap; }
+.ef-phonograph .fext .fa .lnk { max-width: 330px; cursor: pointer; overflow: hidden; text-overflow: ellipsis;
+  border-bottom: 1px solid transparent; }
+.ef-phonograph .fext .fa .lnk.al { font-weight: 400; font-size: 11px; opacity: .8; }
+.ef-phonograph .fext .fa .lnk:hover { opacity: 1; border-bottom-color: currentColor; }
+.ef-phonograph .fext .fa .sep { display: none; }
