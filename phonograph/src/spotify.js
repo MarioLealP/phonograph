@@ -197,6 +197,31 @@
     seek: (ms) => S().Player.seek(ms),
     shuffle: () => S().Player.getShuffle(),
     toggleShuffle: () => S().Player.toggleShuffle(),
+    // three modes (Spotify's ShuffleAPI, per playing context): 0 off, 1 shuffle, 2 smart shuffle;
+    // without the API (older Spotify) it's the plain on/off toggle
+    async shuffleMode() {
+      const api = S().Platform.ShuffleAPI, uri = S().Player.data?.context?.uri;
+      if (api && uri) {
+        try { return await api.getShuffle(uri); } catch (e) { /* fall through */ }
+      }
+      return S().Player.getShuffle() ? 1 : 0;
+    },
+    async setShuffleMode(m) {
+      const api = S().Platform.ShuffleAPI, uri = S().Player.data?.context?.uri;
+      if (api && uri) {
+        try {
+          // Spotify ignores smart shuffle -> off directly (its own menu also goes through plain shuffle)
+          if (m === 0 && (await api.getShuffle(uri)) === 2) {
+            await api.setShuffle(uri, 1);
+            await new Promise((r) => setTimeout(r, 300));
+          }
+          await api.setShuffle(uri, m);
+          return true;
+        } catch (e) { return false; } // e.g. not smart-shuffle eligible
+      }
+      S().Player.setShuffle(m > 0);
+      return true;
+    },
     repeat: () => S().Player.getRepeat(), // 0 off, 1 context, 2 track
     toggleRepeat: () => S().Player.toggleRepeat(),
     volume: () => S().Player.getVolume(),

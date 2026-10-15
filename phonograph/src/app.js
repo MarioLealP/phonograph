@@ -427,7 +427,10 @@
       const p = sp.playing();
       playBtn.innerHTML = p ? PAUSE : PLAY;
       $(".timer .pp").classList.toggle("paused", !p);
-      shuf.classList.toggle("on", !!sp.shuffle());
+      sp.shuffleMode().then((m) => {
+        shuf.classList.toggle("on", m > 0);
+        shuf.classList.toggle("smart", m === 2);
+      });
       rep.classList.toggle("on", sp.repeat() > 0);
       rep.classList.toggle("one", sp.repeat() === 2);
     }
@@ -435,7 +438,13 @@
     $(".timer").addEventListener("click", sp.toggle);
     $(".ctrls .prev").addEventListener("click", sp.back);
     $(".ctrls .next").addEventListener("click", sp.skip);
-    shuf.addEventListener("click", () => { sp.toggleShuffle(); setTimeout(renderTransport, 150); });
+    // off -> shuffle -> smart shuffle -> off (smart refused for this context = straight to off)
+    shuf.addEventListener("click", async () => {
+      const next = ((await sp.shuffleMode()) + 1) % 3;
+      if (!(await sp.setShuffleMode(next)) && next === 2) await sp.setShuffleMode(0);
+      setTimeout(renderTransport, 150);
+      setTimeout(() => { lastQueue = queueSig(); renderDeck(); }, 700); // the new order, without waiting for the poll
+    });
     rep.addEventListener("click", () => { sp.toggleRepeat(); setTimeout(renderTransport, 150); });
     function paintVol() {
       vol.style.background = "linear-gradient(90deg, var(--acc-vol) " + vol.value + "%, rgba(255,255,255,.14) " + vol.value + "%)";
@@ -444,6 +453,14 @@
       sp.setVolume(+vol.value / 100);
       paintVol();
     });
+    // mouse wheel over the volume area: 5% a notch
+    $(".vol").addEventListener("wheel", (e) => {
+      e.preventDefault();
+      const v = Math.max(0, Math.min(100, Math.round(sp.volume() * 100) + (e.deltaY < 0 ? 5 : -5)));
+      sp.setVolume(v / 100);
+      vol.value = String(v);
+      paintVol();
+    }, { passive: false });
     let unmute = 0.7;
     $(".vol .spk").addEventListener("click", () => {
       const v = sp.volume();
@@ -677,8 +694,17 @@
     const onPlay = () => renderTransport();
     sp.on("songchange", onSong);
     sp.on("onplaypause", onPlay);
+    // the deck only follows song changes; shuffling (or a queue edit elsewhere) reorders the queue without one -
+    // redraw it when the upcoming tracks differ
+    const queueSig = () => sp.next(2).map((t) => t.uri).join(",") + "|" + JSON.stringify(sp.queueDepth());
+    let lastQueue = "";
     const poll = setInterval(() => {
       renderTransport(); // shuffle / repeat / volume changed elsewhere
+      const q = queueSig();
+      if (q !== lastQueue) {
+        if (lastQueue) renderDeck();
+        lastQueue = q;
+      }
       $(".vol .device").classList.toggle("remote", sp.devices().some((d) => d.active && !d.local));
     }, 1500);
 
