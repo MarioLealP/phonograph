@@ -85,16 +85,32 @@
       }
     },
 
-    // the library as the strip shows it: Liked Songs first, then playlists (folders flattened)
+    // the library as the strip shows it (Mario 2026-10-15: "my most used isn't on top", the phone's order): Liked
+    // Songs first, then Spotify's own Recents order - your Spotify pins, then by last played. Playlists, albums and
+    // artists (the list opens all three); folders flattened in place, their contents in Recents order too. Older
+    // Spotify without that sort: the rootlist's custom order, playlists only.
     async playlists() {
       const out = [{ uri: "spotify:collection:tracks", name: "Liked Songs", cover: "", liked: true }];
-      const walk = (items) => {
-        for (const p of items || []) {
-          if (p.type === "folder") walk(p.items);
-          else if (p.type === "playlist") out.push({ uri: p.uri, name: p.name, cover: img(p.images?.[0]?.url) });
+      const L = S().Platform.LibraryAPI, sortOrder = L?.getRecentsSortOrderId?.();
+      if (!sortOrder) {
+        const walk = (items) => {
+          for (const p of items || []) {
+            if (p.type === "folder") walk(p.items);
+            else if (p.type === "playlist") out.push({ uri: p.uri, name: p.name, cover: img(p.images?.[0]?.url) });
+          }
+        };
+        walk((await S().Platform.RootlistAPI.getContents()).items);
+        return out;
+      }
+      const walk = async (folderUri) => {
+        const r = await L.getContents({ folderUri, sortOrder, limit: 500, offset: 0 });
+        for (const p of r.items || []) {
+          if (p.type === "folder") await walk(p.uri);
+          else if (p.type === "playlist" || p.type === "album" || p.type === "artist")
+            out.push({ uri: p.uri, name: p.name, cover: img(p.images?.[0]?.url) });
         }
       };
-      walk((await S().Platform.RootlistAPI.getContents()).items);
+      await walk(undefined);
       return out;
     },
     // the rootlist arrives without images; metadata has them (mosaics for user playlists)
