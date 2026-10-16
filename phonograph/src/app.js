@@ -64,7 +64,10 @@
     el.innerHTML =
       '<div class="bg-dot"></div><div class="bg-rings"></div><canvas class="bg-lights"></canvas>'
       + '<div class="top"><div class="title">PHONOGRAPH <span>MKV-I</span></div>'
-      + '<label class="search"><b>›››</b><input class="q" spellcheck="false" placeholder="SEARCH"></label></div>'
+      + '<label class="search"><b>›››</b><input class="q" spellcheck="false" placeholder="SEARCH"></label>'
+      + '<div class="wctl"><button class="wb gear" title="SETTINGS (CTRL+,)"><svg viewBox="0 0 24 24">'
+      + '<circle cx="12" cy="12" r="3.5"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4M4.9 4.9l2.8 2.8M16.3 16.3l2.8 2.8'
+      + 'M4.9 19.1l2.8-2.8M16.3 7.7l2.8-2.8"/></svg></button></div></div>'
       + '<div class="main">'
       + '<div class="col">'
       + '<div class="lblrow"><span class="lbl">PREVIOUS</span><i class="hr"></i><span class="micro2 qprev">QUEUE.00</span></div>'
@@ -400,6 +403,27 @@
       if (auto.axis === "y") auto.box.scrollTop += step;
       else auto.box.scrollLeft += step;
     }
+
+    /* ---- Spotify's own settings page: the phonograph covers the window and the skin hides Spotify's top bar (its
+       only way in), so the gear / Ctrl+, step aside onto Spotify's page; the back chip / Escape return ---- */
+    const back = document.createElement("button");
+    back.className = "ph-back";
+    back.textContent = "‹ PHONOGRAPH";
+    back.hidden = true;
+    document.body.appendChild(back);
+    function settings(open) {
+      sp.settings(open);
+      el.parentElement.style.display = open ? "none" : "";
+      back.hidden = !open;
+    }
+    $(".gear").addEventListener("click", () => settings(true));
+    back.addEventListener("click", () => settings(false));
+    addEventListener("keydown", (e) => {
+      if (e.ctrlKey && e.key === ",") {
+        e.preventDefault();
+        settings(back.hidden);
+      } else if (e.key === "Escape" && !back.hidden) settings(false);
+    });
 
     /* ---- search ---- */
     let typing = 0;

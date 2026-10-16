@@ -13,6 +13,8 @@ Live touches beyond the static mock (Mario): the mock's violet takes the cover's
 hsl(cover hue + offset, sat x factor, the mock's lightness)); the background glows are drifting "fairy lights" that
 dance to the music (bass swells the glows, each mote follows its own band); barcodes are generated from the
 track / album / list name.
+Spotify's own Settings: the gear top-right (or Ctrl+,) steps aside onto Spotify's settings page - the theme hides
+Spotify's top bar, its only way in; "‹ PHONOGRAPH" (or Escape) comes back.
 
 ## Layout of this repo
 - `phonograph/src/` - `core.js` + `phonograph.css` copied from the mock (unchanged), `live.css` (additions),

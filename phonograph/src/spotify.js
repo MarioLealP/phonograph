@@ -251,6 +251,8 @@
       const C = S().Platform.ConnectAPI;
       return d.local ? C.pullToLocal() : C.transferPlayback(d.id, {});
     },
+    // Spotify's own preferences page (open) or back to its home view
+    settings: (open) => S().Platform.History.push(open ? "/preferences" : "/"),
     on: (ev, fn) => S().Player.addEventListener(ev, fn),
     off: (ev, fn) => S().Player.removeEventListener(ev, fn),
   };

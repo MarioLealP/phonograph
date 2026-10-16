@@ -150,3 +150,12 @@
 .ef-phonograph .ph-anchor.fwd .dn, .ef-phonograph .ph-anchor.fwd .rt,
 .ef-phonograph .ph-anchor.back .up, .ef-phonograph .ph-anchor.back .lf { stroke: var(--yellow); stroke-width: 2.2; }
 .ef-phonograph.autoscrolling, .ef-phonograph.autoscrolling * { cursor: all-scroll !important; }
+
+/* settings gear: the mock's .wb window button; thinner stroke for the denser glyph */
+.ef-phonograph .wb.gear svg { stroke-width: 2.2; }
+/* back chip over Spotify's settings page (outside the phonograph, which is hidden meanwhile) */
+.ph-back { position: fixed; right: 76px; top: 14px; z-index: 2147483001; padding: 8px 14px 8px 12px; cursor: pointer;
+  background: #0F0F10; color: #f1f1f4; border: 1px solid rgba(255,255,255,.22); border-left: 3px solid #FFFA00;
+  font: 600 12px "JetBrains Mono", monospace; letter-spacing: .16em; }
+.ph-back:hover { border-color: rgba(255,255,255,.45); border-left-color: #FFFA00; }
+.ph-back[hidden] { display: none; }
