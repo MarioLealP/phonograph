@@ -32,6 +32,8 @@ clockmost-shell): it enables `phonograph-audio` (user service), puts the `spotif
 installer -> `~/.local/bin`; not in Arch's repos, and it must be able to update itself), links the extension + theme
 from `/usr/share/phonograph` into Spicetify's config, sets the config and applies. Package updates reach Spotify at its
 next launch: `spotify-refresh` re-applies when `/usr/share/phonograph`'s files changed since the last apply.
+Opt out per user: a line `spotify-skin` in `~/.config/clockmost/setup-off` = plain Spotify (setup skips the override
+and the skin; the relay still runs). Undo an applied skin with `spicetify restore` + remove the override.
 
 ## Data (probed live on Spotify 1.3.4.258 + Spicetify 2.45.3 - past its tested Linux range of 1.2.96)
 now playing Player.data.item; prev/next Spicetify.Queue; queue PlayerAPI.getQueue; lyrics spclient color-lyrics/v2

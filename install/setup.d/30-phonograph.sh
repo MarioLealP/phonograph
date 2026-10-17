@@ -8,6 +8,13 @@ export PATH="$HOME/.local/bin:$PATH"
 # the spectrum relay
 systemctl --user enable --now phonograph-audio.service >/dev/null 2>&1 && echo "   phonograph-audio running"
 
+# "spotify-skin" in ~/.config/clockmost/setup-off = plain Spotify: no launcher override, no Spicetify skin (the relay
+# above stays - clockmost-shell's MEDIA tab uses it). It doesn't undo a skin already applied: `spicetify restore`.
+if grep -qsx spotify-skin "${XDG_CONFIG_HOME:-$HOME/.config}/clockmost/setup-off"; then
+    echo "   Spotify: skin off (setup-off) - left alone"
+    exit 0
+fi
+
 # launches go through spotify-refresh (Spotify + Spicetify kept current) - this entry replaces the package's
 install -Dm644 "$SKIN/spotify-launcher.desktop" "$HOME/.local/share/applications/spotify-launcher.desktop"
 kbuildsycoca6 >/dev/null 2>&1 || true
