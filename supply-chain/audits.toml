@@ -1,4 +1,8 @@
 
 # cargo-vet audits file
 
-[audits]
+[[audits.libc]]
+who = "Benylin <lealmariop@gmail.com>"
+criteria = "safe-to-deploy"
+delta = "0.2.190 -> 0.2.191"
+notes = "Delta: build.rs adds Emscripten-version cfgs only (no new I/O, env or process use); src adds FFI consts/structs/decls (FreeBSD elf_common, pthread_condattr clock, emscripten type fixes). No behaviour beyond bindings."
