@@ -3,7 +3,7 @@
 # Builds from $startdir (the pkgs/ CI checks out the tagged commit and runs makepkg in place).
 
 pkgname=phonograph
-pkgver=0.1.5
+pkgver=0.2.0
 pkgrel=1
 pkgdesc="phonograph-audio: the live cava spectrum (what you hear, 48 bars over a local WebSocket) behind clockmost-shell's MEDIA tab"
 arch=('x86_64')
