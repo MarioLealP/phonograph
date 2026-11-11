@@ -1,3 +1,8 @@
 post_install() {
-  echo ":: run 'clockmost-desktop-setup' as your user (from clockmost-shell) - it sets up Spicetify + the skin"
+  echo ":: run 'clockmost-desktop-setup' as your user (from clockmost-shell) - it starts the phonograph-audio relay"
+}
+
+post_upgrade() {
+  echo ":: phonograph is the audio relay only now (the Spotify skin is gone): run 'clockmost-desktop-setup' to drop the"
+  echo "   old Spotify launcher override; 'spicetify restore' takes an applied skin off Spotify"
 }

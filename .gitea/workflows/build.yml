@@ -12,6 +12,6 @@ jobs:
     with:
       pkgname: phonograph
       # makepkg runs without sudo in CI: depends + the python makedepend must be preinstalled here
-      extra_pacman_deps: "python spotify-launcher cava noto-fonts-cjk ttf-jetbrains-mono inter-font libnotify"
+      extra_pacman_deps: "cava"
     secrets:
       PACKAGE_TOKEN: ${{ secrets.PACKAGE_TOKEN }}
